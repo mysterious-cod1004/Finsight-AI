@@ -29,7 +29,7 @@ export async function generateInsightAnswer(question: string): Promise<string> {
     });
 
     // FIX: Added explicit type (expense: ExpenseRecord) to resolve the build error
-    const expenseData: ExpenseRecord[] = expenses.map((expense): ExpenseRecord => ({
+    const expenseData: ExpenseRecord[] = expenses.map((expense: any): ExpenseRecord => ({
       id: expense.id,
       amount: expense.amount,
       category: expense.category || 'Other',
