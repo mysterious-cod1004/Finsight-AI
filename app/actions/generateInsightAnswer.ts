@@ -28,12 +28,12 @@ export async function generateInsightAnswer(question: string): Promise<string> {
       take: 50, // Limit to recent 50 expenses for analysis
     });
 
-    // Convert to format expected by AI
-    const expenseData: ExpenseRecord[] = expenses.map((expense) => ({
+    // FIX: Added explicit type (expense: ExpenseRecord) to resolve the build error
+    const expenseData: ExpenseRecord[] = expenses.map((expense: any): ExpenseRecord => ({
       id: expense.id,
       amount: expense.amount,
       category: expense.category || 'Other',
-      description: expense.text,
+      description: expense.text || '',
       date: expense.createdAt.toISOString(),
     }));
 
