@@ -2,9 +2,9 @@
 
 import { checkUser } from '@/lib/checkUser';
 import { db } from '@/lib/db';
-import { generateAIAnswer, ExpenseRecord } from '@/lib/ai';
+import { generateExpenseInsights, ExpenseRecord } from '@/lib/ai';
 
-export async function generateInsightAnswer(question: string): Promise<string> {
+export async function getAIInsights() {
   try {
     const user = await checkUser();
     if (!user) {
@@ -25,23 +25,21 @@ export async function generateInsightAnswer(question: string): Promise<string> {
       orderBy: {
         createdAt: 'desc',
       },
-      take: 50, // Limit to recent 50 expenses for analysis
     });
 
-    // FIX: Added explicit type (expense: ExpenseRecord) to resolve the build error
+    // FIX: Added explicit type (expense: any) or (expense: ExpenseRecord) to satisfy the compiler
     const expenseData: ExpenseRecord[] = expenses.map((expense: any): ExpenseRecord => ({
       id: expense.id,
       amount: expense.amount,
       category: expense.category || 'Other',
-      description: expense.text || '',
+      description: expense.text || '', // Ensure this matches your Record model field (text vs description)
       date: expense.createdAt.toISOString(),
     }));
 
-    // Generate AI answer
-    const answer = await generateAIAnswer(question, expenseData);
-    return answer;
+    const insights = await generateExpenseInsights(expenseData);
+    return { data: insights };
   } catch (error) {
-    console.error('Error generating insight answer:', error);
-    return "I'm unable to provide a detailed answer at the moment. Please try refreshing the insights or check your connection.";
+    console.error('❌ Error getting AI insights:', error);
+    return { error: 'Failed to fetch AI insights' };
   }
 }
