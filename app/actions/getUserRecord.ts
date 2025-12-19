@@ -22,7 +22,7 @@ async function getUserRecord(): Promise<{
 
     // Count the number of days with valid sleep records
     const daysWithRecords = records.filter(
-      (record) => record.amount > 0
+      (record: any) => record.amount > 0
     ).length;
 
     return { record, daysWithRecords };
